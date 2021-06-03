@@ -12,31 +12,36 @@ import static com.codeborne.selenide.Selectors.*;
 import static com.codeborne.selenide.Selenide.*;
 
 class CardDeliveryTest {
+    private int daysToAdd;
 
-    LocalDate date = LocalDate.now().plusDays(3);
-    DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd.MM.yyyy");
-    String output = dtf.format(date);
+    public String addDays(int daysToAdd) {
+        LocalDate date = LocalDate.now().plusDays(daysToAdd);
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+        String output = dtf.format(date);
+        return output;
+    }
 
     @BeforeEach
     void setUp() {
         open("http://localhost:9999");
     }
+
     @Test
     void shouldFormCardDeliveryTest() {
         $("[data-test-id=city] input").setValue("Самара").pressEnter();
-        $("[data-test-id=date] input").doubleClick().sendKeys(output);
+        $("[data-test-id=date] input").doubleClick().sendKeys(addDays(3));
         $("[data-test-id=name] input").setValue("Марина Олийнык");
         $("[data-test-id=phone] input").setValue("+79370000000");
         $("[data-test-id=agreement]").click();
         $(withText("Забронировать")).click();
         $(".notification").shouldBe(visible, Duration.ofSeconds(15));
-        $(".notification__content").shouldHave(exactText("Встреча успешно забронирована на " + output));
+        $(".notification__content").shouldHave(exactText("Встреча успешно забронирована на " + addDays(3)));
     }
 
     @Test
     void shouldTestFieldCity() {
         $("[data-test-id=city] input").setValue("Сызрань").pressEnter();
-        $("[data-test-id=date] input").doubleClick().sendKeys(output);
+        $("[data-test-id=date] input").doubleClick().sendKeys(addDays(3));
         $("[data-test-id=name] input").setValue("Марина Олийнык");
         $("[data-test-id=phone] input").setValue("+79370000000");
         $("[data-test-id=agreement]").click();
@@ -47,7 +52,7 @@ class CardDeliveryTest {
     @Test
     void shouldTestFieldData() {
         $("[data-test-id=city] input").setValue("Самара").pressEnter();
-        $("[data-test-id=date] input").doubleClick().sendKeys("02.06.2021");
+        $("[data-test-id=date] input").doubleClick().sendKeys(addDays(0));
         $("[data-test-id=name] input").setValue("Марина Олийнык");
         $("[data-test-id=phone] input").setValue("+79370000000");
         $("[data-test-id=agreement]").click();
@@ -58,7 +63,7 @@ class CardDeliveryTest {
     @Test
     void shouldTestFieldName() {
         $("[data-test-id=city] input").setValue("Самара").pressEnter();
-        $("[data-test-id=date] input").doubleClick().sendKeys(output);
+        $("[data-test-id=date] input").doubleClick().sendKeys(addDays(3));
         $("[data-test-id=name] input").setValue("Marina Oliynyk");
         $("[data-test-id=phone] input").setValue("+79370000000");
         $("[data-test-id=agreement]").click();
@@ -69,7 +74,7 @@ class CardDeliveryTest {
     @Test
     void shouldTestFieldPhone() {
         $("[data-test-id=city] input").setValue("Самара").pressEnter();
-        $("[data-test-id=date] input").doubleClick().sendKeys(output);
+        $("[data-test-id=date] input").doubleClick().sendKeys(addDays(3));
         $("[data-test-id=name] input").setValue("Марина Олийнык");
         $("[data-test-id=phone] input").setValue("89370000000");
         $("[data-test-id=agreement]").click();
@@ -80,17 +85,18 @@ class CardDeliveryTest {
     @Test
     void shouldTestFieldAgreement() {
         $("[data-test-id=city] input").setValue("Самара").pressEnter();
-        $("[data-test-id=date] input").doubleClick().sendKeys(output);
+        $("[data-test-id=date] input").doubleClick().sendKeys(addDays(3));
         $("[data-test-id=name] input").setValue("Марина Олийнык");
         $("[data-test-id=phone] input").setValue("+79370000000");
-        $("[data-test-id=agreement] .checkbox__text").shouldHave(exactText("Я соглашаюсь с условиями обработки и использования моих персональных данных"));
         $(withText("Забронировать")).click();
+        $("[data-test-id='agreement'].input_invalid ").shouldBe(visible);
+        // $(".input_invalid .checkbox__text").shouldHave(exactText("Я соглашаюсь с условиями обработки и использования моих персональных данных"));
     }
 
     @Test
     void shouldTestFieldNonInputPhone() {
         $("[data-test-id=city] input").setValue("Самара").pressEnter();
-        $("[data-test-id=date] input").doubleClick().sendKeys(output);
+        $("[data-test-id=date] input").doubleClick().sendKeys(addDays(3));
         $("[data-test-id=name] input").setValue("Марина Олийнык");
         $("[data-test-id=phone] input").setValue("");
         $("[data-test-id=agreement]").click();
